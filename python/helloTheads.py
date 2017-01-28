@@ -1,16 +1,18 @@
 #!/usr/bin/python
 
-import thread
+import threading
 import time
 
 def print_message(threadId):
-    time.sleep(0.05 * threadId)
+    time.sleep(0.01 * threadId)
     print "Hello from thread ", threadId
 
-for i in range(0, 4):
-    try:
-       thread.start_new_thread(print_message, (i,))
-    except:
-        print "Unable to start a thread, id - ", i
 
-time.sleep(.5)
+threadList = []
+for i in range(0, 4):
+    t = threading.Thread(target=print_message(i))
+    t.start()
+    threadList.append(t)
+
+for t in threadList:
+    t.join()
