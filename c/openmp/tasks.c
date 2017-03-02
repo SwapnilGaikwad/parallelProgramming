@@ -2,7 +2,7 @@
 #include <omp.h>
 
 int sum(const int *arr, int size){
-  int half;
+  int half, x, y;
 
   if(size == 0){
     return 0;
@@ -11,7 +11,18 @@ int sum(const int *arr, int size){
   }
 
   half = size / 2;
-  return sum(arr, half) + sum(arr + half, size - half);
+ 
+  #pragma omp parallel
+  #pragma omp single nowait
+  { 
+    #pragma omp task shared(x)
+    x = sum(arr, half);
+    #pragma omp task shared(y)
+    y = sum(arr + half, size - half);
+    #pragma omp taskwait
+    x += y;
+  }
+  return x;
 }
 
 int main(){
